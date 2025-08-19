@@ -1,9 +1,9 @@
-CREATE TABLE products (
+CREATE TABLE fizzbuzz (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name        TEXT NOT NULL,
-    description TEXT,
-    price       NUMERIC(10,2) NOT NULL,
-    stock       INT NOT NULL DEFAULT 0,
+    int1        INT NOT NULL,
+    int2        INT NOT NULL,
+    str1        TEXT NOT NULL,
+    str2        TEXT NOT NULL,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
