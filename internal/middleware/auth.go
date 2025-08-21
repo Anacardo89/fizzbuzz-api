@@ -11,6 +11,12 @@ func (m *MiddlewareHandler) Auth(next http.Handler) http.Handler {
 		tokenStr := extractToken(r)
 		claims, err := m.tokenManager.ValidateToken(tokenStr)
 		if err != nil {
+			m.log.Error("token validation",
+				"error", err,
+				"method", r.Method,
+				"path", r.URL.Path,
+				"client_ip", r.RemoteAddr,
+			)
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}

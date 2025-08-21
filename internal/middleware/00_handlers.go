@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/Anacardo89/ecommerce_api/internal/auth"
-	"github.com/Anacardo89/ecommerce_api/internal/logger"
+	"github.com/Anacardo89/fizzbuzz-api/internal/auth"
+	"github.com/Anacardo89/fizzbuzz-api/pkg/logger"
 )
 
 type CtxKey string
@@ -13,12 +13,12 @@ const (
 
 type MiddlewareHandler struct {
 	tokenManager *auth.TokenManager
-	logger       *logger.Logger
+	log          *logger.Logger
 }
 
 func NewMiddlewareHandler(tm *auth.TokenManager, l *logger.Logger) *MiddlewareHandler {
 	return &MiddlewareHandler{
 		tokenManager: tm,
-		logger:       l,
+		log:          l,
 	}
 }

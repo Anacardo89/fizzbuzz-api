@@ -11,12 +11,12 @@ import (
 func TestValidateFizzBuzzParams(t *testing.T) {
 	tests := []struct {
 		name    string
-		params  FizzBuzzParams
+		params  FizzBuzzURLParams
 		wantErr error
 	}{
 		{
 			name: "valid params",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  3,
 				Int2:  5,
 				Limit: 100,
@@ -27,7 +27,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "invalid limit zero",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  3,
 				Int2:  5,
 				Limit: 0,
@@ -38,7 +38,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "invalid limit too high",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  3,
 				Int2:  5,
 				Limit: 1_000_001,
@@ -49,7 +49,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "invalid Int1",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  -1,
 				Int2:  5,
 				Limit: 100,
@@ -60,7 +60,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "invalid Int2",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  3,
 				Int2:  0,
 				Limit: 100,
@@ -71,7 +71,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "invalid ints",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  -1,
 				Int2:  0,
 				Limit: 100,
@@ -82,7 +82,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "empty Str1",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  3,
 				Int2:  5,
 				Limit: 100,
@@ -93,7 +93,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "empty Str2",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  3,
 				Int2:  5,
 				Limit: 100,
@@ -104,7 +104,7 @@ func TestValidateFizzBuzzParams(t *testing.T) {
 		},
 		{
 			name: "empty strings",
-			params: FizzBuzzParams{
+			params: FizzBuzzURLParams{
 				Int1:  3,
 				Int2:  5,
 				Limit: 100,

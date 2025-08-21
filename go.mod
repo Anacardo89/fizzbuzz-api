@@ -1,4 +1,4 @@
-module github.com/Anacardo89/ecommerce_api
+module github.com/Anacardo89/fizzbuzz-api
 
 go 1.24.4
 

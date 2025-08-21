@@ -1,6 +1,8 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func FizzBuzz(int1, int2 int, str1, str2 string, limit int) []string {
 	fb := make([]string, limit)

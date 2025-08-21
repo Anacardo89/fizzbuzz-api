@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Anacardo89/ecommerce_api/internal/repo"
+	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 	ErrFieldNotInt  = "%s must be a valid integer"
 )
 
-type FizzBuzzParams struct {
+type FizzBuzzURLParams struct {
 	Int1  int
 	Int2  int
 	Str1  string
@@ -23,7 +23,7 @@ type FizzBuzzParams struct {
 	Limit int
 }
 
-func NewFizzBuzzParams(int1Str, int2Str, str1, str2, limitStr string) (*FizzBuzzParams, error) {
+func NewFizzBuzzParams(int1Str, int2Str, str1, str2, limitStr string) (*FizzBuzzURLParams, error) {
 	int1, err := strconv.Atoi(int1Str)
 	if err != nil {
 		return nil, fmt.Errorf(ErrFieldNotInt, "int1")
@@ -36,7 +36,7 @@ func NewFizzBuzzParams(int1Str, int2Str, str1, str2, limitStr string) (*FizzBuzz
 	if err != nil {
 		return nil, fmt.Errorf(ErrFieldNotInt, "limit")
 	}
-	p := FizzBuzzParams{
+	p := FizzBuzzURLParams{
 		Int1:  int1,
 		Int2:  int2,
 		Str1:  str1,
@@ -49,7 +49,7 @@ func NewFizzBuzzParams(int1Str, int2Str, str1, str2, limitStr string) (*FizzBuzz
 	return &p, nil
 }
 
-func ValidateFizzBuzzParams(p FizzBuzzParams) error {
+func ValidateFizzBuzzParams(p FizzBuzzURLParams) error {
 	if p.Limit <= 0 || p.Limit > 1_000_000 {
 		return ErrInvalidLimit
 	}
@@ -62,17 +62,7 @@ func ValidateFizzBuzzParams(p FizzBuzzParams) error {
 	return nil
 }
 
-func ParamsFromDB(row repo.FizzBuzzRow) (FizzBuzzParams, int) {
-	return FizzBuzzParams{
-		Int1:  row.Int1,
-		Int2:  row.Int2,
-		Str1:  row.Str1,
-		Str2:  row.Str2,
-		Limit: 0,
-	}, row.RequestCount
-}
-
-func ParamsToDB(p FizzBuzzParams) repo.FizzBuzzRow {
+func ParamsToDB(p FizzBuzzURLParams) repo.FizzBuzzRow {
 	return repo.FizzBuzzRow{
 		Int1: p.Int1,
 		Int2: p.Int2,
