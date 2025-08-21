@@ -5,22 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
-
-type FizzBuzzRepo struct {
-	pool *pgxpool.Pool
-}
-
-func NewFizzBuzzRepo(pool *pgxpool.Pool) *FizzBuzzRepo {
-	return &FizzBuzzRepo{
-		pool: pool,
-	}
-}
-
-func (r *FizzBuzzRepo) Close() {
-	r.pool.Close()
-}
 
 type FizzBuzzRow struct {
 	ID           uuid.UUID
@@ -54,8 +39,7 @@ func (r *FizzBuzzRepo) UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow) e
 	return nil
 }
 
-// GetMostUsed returns the record with the highest request_count
-func (r *FizzBuzzRepo) GetMostUsed(ctx context.Context) (*FizzBuzzRow, error) {
+func (r *FizzBuzzRepo) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzzRow, error) {
 	query := `
 		SELECT 
 			int1,

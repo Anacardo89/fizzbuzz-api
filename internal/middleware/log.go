@@ -8,21 +8,22 @@ import (
 func (m *MiddlewareHandler) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		m.logger.Info("request received",
+		m.log.Info("request received",
 			"method", r.Method,
 			"path", r.URL.Path,
+			"query", r.URL.RawQuery,
 			"time_received", start,
 			"client_ip", r.RemoteAddr,
 		)
 
 		rw := newLogRW(w)
-
 		next.ServeHTTP(rw, r)
 
 		duration := time.Since(start)
-		m.logger.Info("request completed",
+		m.log.Info("request completed",
 			"method", r.Method,
 			"path", r.URL.Path,
+			"query", r.URL.RawQuery,
 			"status", rw.Status(),
 			"size", rw.Size(),
 			"duration_ms", duration.Milliseconds(),
@@ -31,6 +32,7 @@ func (m *MiddlewareHandler) Middleware(next http.Handler) http.Handler {
 	})
 }
 
+// Used to capture status code of response
 type LogRW struct {
 	http.ResponseWriter
 	status int
