@@ -5,37 +5,31 @@ import (
 	"net/http"
 )
 
-type FizzBuzzStatsResponse struct {
-	Int1  int    `json:"int1"`
-	Int2  int    `json:"int2"`
-	Str1  string `json:"str1"`
-	Str2  string `json:"str2"`
-	Count int    `json:"count"`
-}
-
 func (h *FizzBuzzHandler) GetTopQuery(w http.ResponseWriter, r *http.Request) {
 	// Error Handling
-	fail := func(msg string, e error, writeError bool, status int) {
-		h.log.Error(msg, "error", e,
+	fail := func(logMsg string, e error, status int, outMsg string) {
+		h.log.Error(logMsg, "error", e,
 			"status_code", status,
 			"method", r.Method,
 			"path", r.URL.Path,
 			"query", r.URL.RawQuery,
 			"client_ip", r.RemoteAddr,
 		)
-		if writeError {
-			http.Error(w, e.Error(), status)
+		w.WriteHeader(status)
+		resp := ErrorResponse{Error: outMsg}
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			h.log.Error("failed to encode error response", "error", err)
 		}
 	}
 	//
 
 	// Execution
+	w.Header().Set("Content-Type", "application/json")
 	fb, err := h.repo.SelectTopFizzBuzzQuery(r.Context())
 	if err != nil {
-		fail("dberr: failed to fetch stats", err, true, http.StatusInternalServerError)
+		fail("dberr: failed to fetch stats", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
-
 	resp := FizzBuzzStatsResponse{
 		Int1:  fb.Int1,
 		Int2:  fb.Int2,
@@ -43,9 +37,7 @@ func (h *FizzBuzzHandler) GetTopQuery(w http.ResponseWriter, r *http.Request) {
 		Str2:  fb.Str2,
 		Count: fb.RequestCount,
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, true, http.StatusInternalServerError)
+		fail("failed to encode response", err, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }
