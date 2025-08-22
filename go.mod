@@ -1,6 +1,6 @@
 module github.com/Anacardo89/fizzbuzz-api
 
-go 1.24.4
+go 1.25.0
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
@@ -9,6 +9,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/stretchr/testify v1.10.0
+	golang.org/x/crypto v0.37.0
 )
 
 require (
@@ -20,7 +21,6 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect

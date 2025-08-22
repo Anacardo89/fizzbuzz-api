@@ -6,14 +6,9 @@ import (
 
 	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
 	"github.com/Anacardo89/fizzbuzz-api/pkg/crypto"
-	"github.com/google/uuid"
 )
 
-type RegisterResponse struct {
-	UserID uuid.UUID `json:"user_id"`
-}
-
-func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	// Error Handling
 	fail := func(logMsg string, e error, status int, outMsg string) {
 		h.log.Error(logMsg, "error", e,
@@ -35,12 +30,12 @@ func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var req AuthRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		fail("invalid register payload", err, http.StatusBadRequest, "invalid payload")
+		fail("invalid register payload", err, http.StatusBadRequest, ErrInvalidPayload.Error())
 		return
 	}
 	hash, err := crypto.HashPassword(req.Password)
 	if err != nil {
-		fail("failed to hash password", err, http.StatusInternalServerError, "internal error")
+		fail("failed to hash password", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
 	userID, err := h.repo.InsertUser(r.Context(), req.Username, hash)
@@ -49,13 +44,13 @@ func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			fail("dberr: user exists", err, http.StatusConflict, "username already exists")
 			return
 		}
-		fail("dberr: failed to insert user", err, http.StatusInternalServerError, "internal error")
+		fail("dberr: failed to insert user", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
 	resp := RegisterResponse{
 		UserID: userID,
 	}
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, http.StatusInternalServerError, "internal error")
+		fail("failed to encode response", err, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }

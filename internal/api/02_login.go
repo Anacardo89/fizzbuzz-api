@@ -8,20 +8,14 @@ import (
 	"github.com/Anacardo89/fizzbuzz-api/pkg/crypto"
 )
 
-type AuthRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type FailHelper struct {
+	LogMsg string
+	Err    error
+	Status int
+	OutMsg string
 }
 
-type LoginResponse struct {
-	Token string `json:"token"`
-}
-
-type ErrorResponse struct {
-	Error string `json:"error"`
-}
-
-func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// Error Handling
 	fail := func(logMsg string, e error, status int, outMsg string) {
 		h.log.Error(logMsg, "error", e,
@@ -43,27 +37,27 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var req AuthRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		fail("invalid login payload", err, http.StatusBadRequest, "invalid payload")
+		fail("invalid login payload", err, http.StatusBadRequest, ErrInvalidPayload.Error())
 		return
 	}
 	user, err := h.repo.SelectUser(r.Context(), req.Username)
 	if err != nil {
-		fail("dberr: failed to get user", err, http.StatusUnauthorized, "invalid username or password")
+		fail("dberr: failed to get user", err, http.StatusUnauthorized, ErrInvalidLoginCreds.Error())
 		return
 	}
 	if !crypto.ValidatePassword(user.Password, req.Password) {
-		fail("invalid password", errors.New("password and hash do not match"), http.StatusUnauthorized, "invalid username or password")
+		fail("invalid password", errors.New("password and hash do not match"), http.StatusUnauthorized, ErrInvalidLoginCreds.Error())
 		return
 	}
 	token, err := h.tokenManger.GenerateToken(user.ID)
 	if err != nil {
-		fail("failed to generate token", err, http.StatusInternalServerError, "internal error")
+		fail("failed to generate token", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
 	resp := LoginResponse{
 		Token: token,
 	}
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, http.StatusInternalServerError, "internal error")
+		fail("failed to encode response", err, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }

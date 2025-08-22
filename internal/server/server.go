@@ -2,21 +2,23 @@ package server
 
 import (
 	"context"
-	"database/sql"
-	"log"
 	"net/http"
 	"time"
 
+	"github.com/Anacardo89/fizzbuzz-api/internal/api"
+	"github.com/Anacardo89/fizzbuzz-api/internal/auth"
+	"github.com/Anacardo89/fizzbuzz-api/internal/middleware"
+	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
+	"github.com/Anacardo89/fizzbuzz-api/pkg/logger"
 	"github.com/gorilla/mux"
 )
 
 type Server struct {
 	httpSrv  *http.Server
-	Router   *mux.Router
-	Addr     string
-	DB       *sql.DB
-	Logger   *log.Logger
-	Timeouts ServerTimeouts
+	router   *mux.Router
+	addr     string
+	log      *logger.Logger
+	timeouts ServerTimeouts
 }
 
 type ServerTimeouts struct {
@@ -25,39 +27,35 @@ type ServerTimeouts struct {
 	ShutdownTimeout time.Duration
 }
 
-func NewServer(addr string, db *sql.DB, logger *log.Logger, timeouts ServerTimeouts) *Server {
+func NewServer(addr string, fbRepo *repo.FizzBuzzRepo, userRepo *repo.UserRepo, l *logger.Logger, to ServerTimeouts, tm *auth.TokenManager) *Server {
+	fh := api.NewFizzBuzzHandler(fbRepo, l)
+	ah := api.NewAuthHandler(tm, userRepo, l)
+	mw := middleware.NewMiddlewareHandler(tm, l)
 	s := &Server{
-		Router:   mux.NewRouter(),
-		Addr:     addr,
-		DB:       db,
-		Logger:   logger,
-		Timeouts: timeouts,
+		router:   NewRouter(fh, ah, mw),
+		addr:     addr,
+		log:      l,
+		timeouts: to,
 	}
 	return s
 }
 
 func (s *Server) Start() error {
 	s.httpSrv = &http.Server{
-		Addr:         s.Addr,
-		Handler:      s.Router,
-		ReadTimeout:  s.Timeouts.ReadTimeout,
-		WriteTimeout: s.Timeouts.WriteTimeout,
+		Addr:         s.addr,
+		Handler:      s.router,
+		ReadTimeout:  s.timeouts.ReadTimeout,
+		WriteTimeout: s.timeouts.WriteTimeout,
 	}
-
-	s.Logger.Println("Starting server on", s.Addr)
+	s.log.Info("Starting server on", "adress", s.addr)
 	return s.httpSrv.ListenAndServe()
 }
 
 func (s *Server) Shutdown() error {
-	ctx, cancel := context.WithTimeout(context.Background(), s.Timeouts.ShutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), s.timeouts.ShutdownTimeout)
 	defer cancel()
-
-	if s.DB != nil {
-		s.DB.Close()
-	}
 	if s.httpSrv != nil {
 		return s.httpSrv.Shutdown(ctx)
 	}
-
 	return nil
 }
