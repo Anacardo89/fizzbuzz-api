@@ -24,7 +24,6 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 	logg := logger.NewLogger(cfg.Log)
-	logg.Info("config", "config", cfg)
 	tokenMan := auth.NewTokenManager(&cfg.Token)
 	fbRepo, userRepo, err := initDB(cfg.DB)
 	if err != nil {
