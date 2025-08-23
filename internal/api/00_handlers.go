@@ -19,6 +19,7 @@ func NewFizzBuzzHandler(cfg *config.PagConfig, r *repo.FizzBuzzRepo, l *logger.L
 	return &FizzBuzzHandler{
 		db:  r,
 		log: l,
+		cfg: cfg,
 	}
 }
 

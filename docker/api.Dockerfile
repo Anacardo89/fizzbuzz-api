@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y ca-certificates netcat-openbsd
 RUN rm -rf /var/lib/apt/lists/*
 COPY --from=builder $APP_PATH .
 COPY scripts/wait-for-db.sh ./scripts/
-COPY config/config.yaml ./config/
 
 ENV PORT=8080
 
