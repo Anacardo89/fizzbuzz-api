@@ -64,3 +64,41 @@ func (r *FizzBuzzRepo) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzzRow
 	}
 	return &fbrow, nil
 }
+
+func (r *FizzBuzzRepo) SelectFizzBuzzQueries(ctx context.Context, limit, offset int) ([]FizzBuzzRow, error) {
+	query := `
+		SELECT 
+			int1,
+			int2,
+			str1,
+			str2,
+			request_count
+		FROM fizzbuzz
+		ORDER BY request_count DESC
+		LIMIT $1
+		OFFSET $2;
+	;`
+	rows, err := r.pool.Query(ctx, query, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query fizzbuzz: %w", err)
+	}
+	defer rows.Close()
+	var results []FizzBuzzRow
+	for rows.Next() {
+		var fbrow FizzBuzzRow
+		if err := rows.Scan(
+			&fbrow.Int1,
+			&fbrow.Int2,
+			&fbrow.Str1,
+			&fbrow.Str2,
+			&fbrow.RequestCount,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
+		}
+		results = append(results, fbrow)
+	}
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("rows error: %w", rows.Err())
+	}
+	return results, nil
+}

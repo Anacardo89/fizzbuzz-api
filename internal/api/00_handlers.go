@@ -9,14 +9,14 @@ import (
 // FizzBuzz
 
 type FizzBuzzHandler struct {
-	repo *repo.FizzBuzzRepo
-	log  *logger.Logger
+	db  *repo.FizzBuzzRepo
+	log *logger.Logger
 }
 
 func NewFizzBuzzHandler(r *repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler {
 	return &FizzBuzzHandler{
-		repo: r,
-		log:  l,
+		db:  r,
+		log: l,
 	}
 }
 
@@ -24,14 +24,14 @@ func NewFizzBuzzHandler(r *repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler
 
 type AuthHandler struct {
 	tokenManger *auth.TokenManager
-	repo        *repo.UserRepo
+	db          *repo.UserRepo
 	log         *logger.Logger
 }
 
 func NewAuthHandler(tm *auth.TokenManager, r *repo.UserRepo, l *logger.Logger) *AuthHandler {
 	return &AuthHandler{
 		tokenManger: tm,
-		repo:        r,
+		db:          r,
 		log:         l,
 	}
 }

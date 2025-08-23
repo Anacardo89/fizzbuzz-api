@@ -38,7 +38,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		fail("failed to hash password", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
-	userID, err := h.repo.InsertUser(r.Context(), req.Username, hash)
+	userID, err := h.db.InsertUser(r.Context(), req.Username, hash)
 	if err != nil {
 		if err == repo.ErrUserExists {
 			fail("dberr: user exists", err, http.StatusConflict, "username already exists")
