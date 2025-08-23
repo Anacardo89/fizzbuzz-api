@@ -17,7 +17,9 @@ import (
 
 func main() {
 	// Dependencies
-	cfg, err := config.Load("config/config.yaml")
+	log.SetOutput(os.Stdout)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}

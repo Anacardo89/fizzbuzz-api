@@ -3,20 +3,19 @@ package config
 import (
 	_ "embed"
 	"fmt"
-	"os"
+	"log"
 	"time"
 
 	"github.com/caarlos0/env/v9"
 	"gopkg.in/yaml.v3"
 )
 
-func Load(path string) (*Config, error) {
+//go:embed config.yaml
+var configBytes []byte
+
+func LoadConfig() (*Config, error) {
 	cfg := defaultConfig()
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("could not read file: %w", err)
-	}
-	if err := yaml.Unmarshal(data, cfg); err != nil {
+	if err := yaml.Unmarshal(configBytes, cfg); err != nil {
 		return nil, fmt.Errorf("unmarshal config: %w", err)
 	}
 	cfg.Server.ReadTimeout *= time.Second
@@ -25,9 +24,16 @@ func Load(path string) (*Config, error) {
 	cfg.Token.Duration *= time.Minute
 	cfg.DB.MaxConnLifetime *= time.Minute
 	cfg.DB.MaxConnIdleTime *= time.Minute
-	if err := env.Parse(cfg); err != nil {
+	envs := EnvVars{}
+	if err := env.Parse(&envs); err != nil {
 		return nil, fmt.Errorf("parsing env: %w", err)
 	}
+	cfg.Server.Port = envs.Port
+	cfg.DB.DSN = envs.DBDSN
+	cfg.Log.Path = envs.LogPath
+	cfg.Log.File = envs.LogFile
+	cfg.Log.Level = envs.LogLevel
+	log.Printf("final cfg: %+v", cfg)
 	return cfg, nil
 }
 
