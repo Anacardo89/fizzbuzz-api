@@ -68,10 +68,12 @@ func ParamsToDB(p FizzBuzzURLParams) repo.FizzBuzzRow {
 
 // AllStats
 
-func validateAllQueriesInput(offsetStr, limitStr string) (int, int, error) {
+func (h *FizzBuzzHandler) ValidateAllStatsInput(offsetStr, limitStr string) (int, int, error) {
 	offset := 0
-	limit := 10
-	maxLimit := 200
+	h.log.Info(fmt.Sprintf("offsetStr: %s", offsetStr))
+	h.log.Info(fmt.Sprintf("limitStr: %s", limitStr))
+	limit := h.cfg.DefaultPageSize
+	maxLimit := h.cfg.MaxPageSize
 	o, err := strconv.Atoi(offsetStr)
 	if err != nil {
 		return offset, limit, fmt.Errorf(ErrFieldNotInt, "offset")

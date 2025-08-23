@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Anacardo89/fizzbuzz-api/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -17,10 +18,10 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func NewTokenManager(secret string, duration time.Duration) *TokenManager {
+func NewTokenManager(cfg *config.TokenConfig) *TokenManager {
 	return &TokenManager{
-		secret:   []byte(secret),
-		duration: duration,
+		secret:   []byte(cfg.Secret),
+		duration: cfg.Duration,
 	}
 }
 
@@ -36,7 +37,8 @@ func (t *TokenManager) GenerateToken(userID string) (string, error) {
 }
 
 func (t *TokenManager) ValidateToken(tokenStr string) (*Claims, error) {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
@@ -45,9 +47,5 @@ func (t *TokenManager) ValidateToken(tokenStr string) (*Claims, error) {
 	if err != nil || !token.Valid {
 		return nil, errors.New("invalid token")
 	}
-	claims, ok := token.Claims.(Claims)
-	if !ok {
-		return nil, errors.New("invalid claims")
-	}
-	return &claims, nil
+	return claims, nil
 }

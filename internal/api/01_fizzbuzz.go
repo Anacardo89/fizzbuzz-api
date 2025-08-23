@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -46,7 +47,7 @@ func (h *FizzBuzzHandler) GetFizzBuzz(w http.ResponseWriter, r *http.Request) {
 	}
 	go func() {
 		paramsDB := ParamsToDB(*params)
-		if err := h.db.UpsertFizzBuzz(r.Context(), paramsDB); err != nil {
+		if err := h.db.UpsertFizzBuzz(context.Background(), paramsDB); err != nil {
 			fail("dberr: upsert fizzbuzz", err, false, 0, "")
 		}
 	}()

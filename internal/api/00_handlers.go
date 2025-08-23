@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Anacardo89/fizzbuzz-api/config"
 	"github.com/Anacardo89/fizzbuzz-api/internal/auth"
 	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
 	"github.com/Anacardo89/fizzbuzz-api/pkg/logger"
@@ -9,11 +10,12 @@ import (
 // FizzBuzz
 
 type FizzBuzzHandler struct {
+	cfg *config.PagConfig
 	db  *repo.FizzBuzzRepo
 	log *logger.Logger
 }
 
-func NewFizzBuzzHandler(r *repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler {
+func NewFizzBuzzHandler(cfg *config.PagConfig, r *repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler {
 	return &FizzBuzzHandler{
 		db:  r,
 		log: l,

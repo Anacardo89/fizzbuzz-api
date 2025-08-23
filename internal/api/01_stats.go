@@ -64,7 +64,7 @@ func (h *FizzBuzzHandler) GetAllQueries(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	offsetStr := r.URL.Query().Get("offset")
 	limitStr := r.URL.Query().Get("limit")
-	offset, limit, err := validateAllQueriesInput(offsetStr, limitStr)
+	offset, limit, err := h.ValidateAllStatsInput(offsetStr, limitStr)
 	if err != nil {
 		fail("invalid params", err, http.StatusBadRequest, err.Error())
 		return

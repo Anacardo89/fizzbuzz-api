@@ -2,20 +2,19 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/Anacardo89/fizzbuzz-api/config"
 	"github.com/Anacardo89/fizzbuzz-api/internal/api"
-	"github.com/Anacardo89/fizzbuzz-api/internal/auth"
 	"github.com/Anacardo89/fizzbuzz-api/internal/middleware"
-	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
 	"github.com/Anacardo89/fizzbuzz-api/pkg/logger"
-	"github.com/gorilla/mux"
 )
 
 type Server struct {
 	httpSrv  *http.Server
-	router   *mux.Router
+	router   http.Handler
 	addr     string
 	log      *logger.Logger
 	timeouts ServerTimeouts
@@ -27,13 +26,15 @@ type ServerTimeouts struct {
 	ShutdownTimeout time.Duration
 }
 
-func NewServer(addr string, fbRepo *repo.FizzBuzzRepo, userRepo *repo.UserRepo, l *logger.Logger, to ServerTimeouts, tm *auth.TokenManager) *Server {
-	fh := api.NewFizzBuzzHandler(fbRepo, l)
-	ah := api.NewAuthHandler(tm, userRepo, l)
-	mw := middleware.NewMiddlewareHandler(tm, l)
+func NewServer(cfg *config.ServerConfig, l *logger.Logger, fh *api.FizzBuzzHandler, ah *api.AuthHandler, mw *middleware.MiddlewareHandler) *Server {
+	to := ServerTimeouts{
+		ReadTimeout:     cfg.ReadTimeout,
+		WriteTimeout:    cfg.WriteTimeout,
+		ShutdownTimeout: cfg.ShutdownTimeout,
+	}
 	s := &Server{
 		router:   NewRouter(fh, ah, mw),
-		addr:     addr,
+		addr:     fmt.Sprintf(":%s", cfg.Port),
 		log:      l,
 		timeouts: to,
 	}

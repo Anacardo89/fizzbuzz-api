@@ -1,39 +1,67 @@
-version: "3.9"
+
+networks:
+  fizzbuzz-network:
+
+volumes:
+  fizzbuzz-db:
+  fizzbuzz-log:
 
 services:
   db:
     image: postgres:16
     container_name: api-db
     environment:
-      POSTGRES_USER:  ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    networks:
+      - fizzbuzz-network
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - fizzbuzz-db:/var/lib/postgresql/data
 
   migrate:
-    image: migrate/migrate:latest
-    container_name: myapi-migrate
+    build:
+      context: .
+      dockerfile: docker/migrate.Dockerfile
+    container_name: fizzbuzz-api-migrate
     depends_on:
       - db
-    command: -path=/migrations -database ${DATABASE_URL} up
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_DSN: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
+      TIMEOUT: ${DB_TIMEOUT}
+    networks:
+      - fizzbuzz-network
     volumes:
       - ./migrations:/migrations
+      - ./scripts:/scripts
+    command: ["${DB_HOST}", "${DB_PORT}", "${DB_TIMEOUT}", "/scripts/migrate.sh"]
 
-  api:
-    build: .
-    container_name: myapi
+  fizzbuzz-api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    container_name: fizzbuzz-api
     depends_on:
       - db
       - migrate
     environment:
       PORT: ${PORT}
-      DATABASE_URL: postgres://myapi:secret@db:5432/myapi?sslmode=disable
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_TIMEOUT: ${DB_TIMEOUT}
+      DB_DSN: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
       JWT_SECRET: ${JWT_SECRET}
+      LOG_PATH: ${LOG_PATH}
+      LOG_FILE: ${LOG_FILE}
     ports:
-      - "8080:8080"
-
-volumes:
-  db_data:
+      - "${PORT}:${PORT}"
+    networks:
+      - fizzbuzz-network
+    volumes:
+      - fizzbuzz-log:${LOG_PATH}
+    command: ["${DB_HOST}", "${DB_PORT}", "${DB_TIMEOUT}", "./fizzbuzz-api"]

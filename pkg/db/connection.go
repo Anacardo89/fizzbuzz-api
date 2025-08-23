@@ -3,32 +3,26 @@ package db
 import (
 	"context"
 	"fmt"
-	"os"
-	"time"
 
+	"github.com/Anacardo89/fizzbuzz-api/config"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func Connect() (*pgxpool.Pool, error) {
-	dsn := os.Getenv("DATABASE_URL")
-	config, err := pgxpool.ParseConfig(dsn)
+func Connect(cfg config.DBConfig) (*pgxpool.Pool, error) {
+	config, err := pgxpool.ParseConfig(cfg.DSN)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}
-
-	config.MaxConns = 10
-	config.MinConns = 2
-	config.MaxConnLifetime = 30 * time.Minute
-	config.MaxConnIdleTime = 5 * time.Minute
-
+	config.MaxConns = cfg.MaxConns
+	config.MinConns = cfg.MinConns
+	config.MaxConnLifetime = cfg.MaxConnLifetime
+	config.MaxConnIdleTime = cfg.MaxConnIdleTime
 	pool, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create pool: %w", err)
 	}
-
 	if err := pool.Ping(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
-
 	return pool, nil
 }

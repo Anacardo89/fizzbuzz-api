@@ -3,6 +3,7 @@ module github.com/Anacardo89/fizzbuzz-api
 go 1.25.0
 
 require (
+	github.com/caarlos0/env/v9 v9.0.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
@@ -10,6 +11,7 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.37.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -25,5 +27,4 @@ require (
 	golang.org/x/text v0.24.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

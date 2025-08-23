@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+type ClaimsKey string
+
+const (
+	UserIDKey ClaimsKey = "user_id"
+)
+
 func (m *MiddlewareHandler) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenStr := extractToken(r)

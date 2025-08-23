@@ -16,10 +16,11 @@ var (
 	ErrInvalidLimit      = errors.New("limit must be greater than 0 and reasonable (<= 1.000.000)")
 	ErrIntLessThan1      = errors.New("int1 and int2 must be > 0")
 	ErrEmptyString       = errors.New("str1 and str2 cannot be empty")
-	ErrFieldNotInt       = "%s must be a valid integer"
 	ErrInvalidPayload    = errors.New("invalid payload")
 	ErrInvalidLoginCreds = errors.New("invalid username or password")
 	ErrInternalError     = errors.New("internal error")
+
+	ErrFieldNotInt = "%s must be a valid integer"
 )
 
 // FizzBuzz
