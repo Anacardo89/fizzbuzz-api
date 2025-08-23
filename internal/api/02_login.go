@@ -40,7 +40,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		fail("invalid login payload", err, http.StatusBadRequest, ErrInvalidPayload.Error())
 		return
 	}
-	user, err := h.repo.SelectUser(r.Context(), req.Username)
+	user, err := h.db.SelectUser(r.Context(), req.Username)
 	if err != nil {
 		fail("dberr: failed to get user", err, http.StatusUnauthorized, ErrInvalidLoginCreds.Error())
 		return

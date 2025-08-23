@@ -30,12 +30,19 @@ type FizzBuzzResponse struct {
 
 // Stats
 
-type FizzBuzzStatsResponse struct {
-	Int1  int    `json:"int1"`
-	Int2  int    `json:"int2"`
-	Str1  string `json:"str1"`
-	Str2  string `json:"str2"`
-	Count int    `json:"count"`
+type StatsResponse struct {
+	Int1 int    `json:"int1"`
+	Int2 int    `json:"int2"`
+	Str1 string `json:"str1"`
+	Str2 string `json:"str2"`
+	Hits int    `json:"hits"`
+}
+
+type AllStatsResponse struct {
+	Stats    []StatsResponse `json:"stats"`
+	StatsLen int             `json:"stats_len"`
+	Offset   int             `json:"offset"`
+	Limit    int             `json:"limit"`
 }
 
 // Auth

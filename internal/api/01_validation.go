@@ -1,11 +1,14 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
 	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
 )
+
+// FizzBuzz
 
 type FizzBuzzURLParams struct {
 	Int1  int
@@ -61,4 +64,33 @@ func ParamsToDB(p FizzBuzzURLParams) repo.FizzBuzzRow {
 		Str1: p.Str1,
 		Str2: p.Str2,
 	}
+}
+
+// AllStats
+
+func validateAllQueriesInput(offsetStr, limitStr string) (int, int, error) {
+	offset := 0
+	limit := 10
+	maxLimit := 200
+	o, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		return offset, limit, fmt.Errorf(ErrFieldNotInt, "offset")
+	} else if o < 0 && offsetStr != "" {
+		err = errors.New("invalid offset, must be >= 0")
+		return offset, limit, err
+	}
+	offset = o
+	l, err := strconv.Atoi(limitStr)
+	if err != nil {
+		return offset, limit, fmt.Errorf(ErrFieldNotInt, "limit")
+	} else if l <= 0 && limitStr != "" {
+		err = errors.New("invalid limit, must be > 0")
+		return offset, limit, err
+	}
+	if l > maxLimit {
+		limit = maxLimit
+	} else {
+		limit = l
+	}
+	return offset, limit, nil
 }

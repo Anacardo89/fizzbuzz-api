@@ -46,7 +46,7 @@ func (h *FizzBuzzHandler) GetFizzBuzz(w http.ResponseWriter, r *http.Request) {
 	}
 	go func() {
 		paramsDB := ParamsToDB(*params)
-		if err := h.repo.UpsertFizzBuzz(r.Context(), paramsDB); err != nil {
+		if err := h.db.UpsertFizzBuzz(r.Context(), paramsDB); err != nil {
 			fail("dberr: upsert fizzbuzz", err, false, 0, "")
 		}
 	}()
