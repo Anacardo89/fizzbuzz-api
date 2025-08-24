@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
 )
@@ -34,8 +35,8 @@ func NewFizzBuzzParams(int1Str, int2Str, str1, str2, limitStr string) (*FizzBuzz
 	p := FizzBuzzURLParams{
 		Int1:  int1,
 		Int2:  int2,
-		Str1:  str1,
-		Str2:  str2,
+		Str1:  strings.ToLower(str1),
+		Str2:  strings.ToLower(str2),
 		Limit: limit,
 	}
 	if err := ValidateFizzBuzzParams(p); err != nil {
