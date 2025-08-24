@@ -4,12 +4,14 @@
 This is a production-ready FizzBuzz REST API with statistics tracking and authentication. It is implemented in Go, uses PostgreSQL for persistence, and is fully tested with unit and integration tests.
 
 ## Endpoints
-- **/fizzbuzz**: Generate a FizzBuzz sequence based on input parameters.
-- **/stats**: Retrieve the most frequently requested FizzBuzz sequence.
-- **/stats/all**: Retrieve all FizzBuzz queries with pagination. Requires authentication.
-- **/auth/register**: Register a new user.
-- **/auth/login**: Log in and receive a token.
-- **Health check**: `/` endpoint for liveness.
+- **/fizzbuzz**: Generate a FizzBuzz sequence based on input parameters
+- **/stats**: Retrieve the most frequently requested FizzBuzz sequence
+- **/stats/all**: Retrieve all FizzBuzz queries with pagination. Requires authentication
+- **/auth/register**: Register a new user
+- **/auth/login**: Log in and receive a token
+- **Health check**: `/` endpoint for liveness
+
+The `/fizzbuzz` and `/stats` endpoints are built according to the challenge requirements, so they are open, `/stats/all` uses auth and pagination to mimic how a production API would implement it.
 
 ## Project Structure
 ```
