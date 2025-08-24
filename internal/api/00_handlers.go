@@ -11,11 +11,11 @@ import (
 
 type FizzBuzzHandler struct {
 	cfg *config.PagConfig
-	db  *repo.FizzBuzzRepo
+	db  repo.FizzBuzzRepo
 	log *logger.Logger
 }
 
-func NewFizzBuzzHandler(cfg *config.PagConfig, r *repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler {
+func NewFizzBuzzHandler(cfg *config.PagConfig, r repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler {
 	return &FizzBuzzHandler{
 		db:  r,
 		log: l,
@@ -27,11 +27,11 @@ func NewFizzBuzzHandler(cfg *config.PagConfig, r *repo.FizzBuzzRepo, l *logger.L
 
 type AuthHandler struct {
 	tokenManger *auth.TokenManager
-	db          *repo.UserRepo
+	db          repo.UserRepo
 	log         *logger.Logger
 }
 
-func NewAuthHandler(tm *auth.TokenManager, r *repo.UserRepo, l *logger.Logger) *AuthHandler {
+func NewAuthHandler(tm *auth.TokenManager, r repo.UserRepo, l *logger.Logger) *AuthHandler {
 	return &AuthHandler{
 		tokenManger: tm,
 		db:          r,

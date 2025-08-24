@@ -21,7 +21,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(status)
 		resp := ErrorResponse{Error: outMsg}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			h.log.Error("failed to encode error response", "error", err)
+			h.log.Error("failed to encode error response body", "error", err)
 		}
 	}
 	//
@@ -47,10 +47,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		fail("dberr: failed to insert user", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
-	resp := RegisterResponse{
+	body := RegisterResponse{
 		UserID: userID,
 	}
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, http.StatusInternalServerError, ErrInternalError.Error())
+	w.WriteHeader(http.StatusCreated)
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		fail("failed to encode response body", err, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }

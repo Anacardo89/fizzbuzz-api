@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (h *FizzBuzzHandler) GetTopQuery(w http.ResponseWriter, r *http.Request) {
+func (h *FizzBuzzHandler) GetStatsTopQuery(w http.ResponseWriter, r *http.Request) {
 	// Error Handling
 	fail := func(logMsg string, e error, status int, outMsg string) {
 		h.log.Error(logMsg, "error", e,
@@ -18,7 +18,7 @@ func (h *FizzBuzzHandler) GetTopQuery(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(status)
 		resp := ErrorResponse{Error: outMsg}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			h.log.Error("failed to encode error response", "error", err)
+			h.log.Error("failed to encode error response body", "error", err)
 		}
 	}
 	//
@@ -30,19 +30,19 @@ func (h *FizzBuzzHandler) GetTopQuery(w http.ResponseWriter, r *http.Request) {
 		fail("dberr: failed to fetch stats", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
-	resp := StatsResponse{
+	body := StatsResponse{
 		Int1: fb.Int1,
 		Int2: fb.Int2,
 		Str1: fb.Str1,
 		Str2: fb.Str2,
 		Hits: fb.RequestCount,
 	}
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, http.StatusInternalServerError, ErrInternalError.Error())
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		fail("failed to encode response body", err, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }
 
-func (h *FizzBuzzHandler) GetAllQueries(w http.ResponseWriter, r *http.Request) {
+func (h *FizzBuzzHandler) GetStatsAllQueries(w http.ResponseWriter, r *http.Request) {
 	// Error Handling
 	fail := func(logMsg string, e error, status int, outMsg string) {
 		h.log.Error(logMsg, "error", e,
@@ -55,7 +55,7 @@ func (h *FizzBuzzHandler) GetAllQueries(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(status)
 		resp := ErrorResponse{Error: outMsg}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			h.log.Error("failed to encode error response", "error", err)
+			h.log.Error("failed to encode error response body", "error", err)
 		}
 	}
 	//
@@ -85,13 +85,13 @@ func (h *FizzBuzzHandler) GetAllQueries(w http.ResponseWriter, r *http.Request) 
 		}
 		stats = append(stats, stat)
 	}
-	resp := AllStatsResponse{
+	body := AllStatsResponse{
 		Stats:    stats,
 		StatsLen: len(stats),
 		Offset:   offset,
 		Limit:    limit,
 	}
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, http.StatusInternalServerError, ErrInternalError.Error())
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		fail("failed to encode response body", err, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }

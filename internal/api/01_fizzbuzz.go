@@ -22,7 +22,7 @@ func (h *FizzBuzzHandler) GetFizzBuzz(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(status)
 			resp := ErrorResponse{Error: outMsg}
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				h.log.Error("failed to encode error response", "error", err)
+				h.log.Error("failed to encode error response body", "error", err)
 			}
 		}
 	}
@@ -41,9 +41,9 @@ func (h *FizzBuzzHandler) GetFizzBuzz(w http.ResponseWriter, r *http.Request) {
 		fail("invalid params", err, true, http.StatusBadRequest, err.Error())
 		return
 	}
-	result := core.FizzBuzz(params.Int1, params.Int2, params.Str1, params.Str2, params.Limit)
-	resp := FizzBuzzResponse{
-		Payload: result,
+	fizzbuzz := core.FizzBuzz(params.Int1, params.Int2, params.Str1, params.Str2, params.Limit)
+	body := FizzBuzzResponse{
+		Payload: fizzbuzz,
 	}
 	go func() {
 		paramsDB := ParamsToDB(*params)
@@ -51,7 +51,7 @@ func (h *FizzBuzzHandler) GetFizzBuzz(w http.ResponseWriter, r *http.Request) {
 			fail("dberr: upsert fizzbuzz", err, false, 0, "")
 		}
 	}()
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, true, http.StatusInternalServerError, ErrInternalError.Error())
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		fail("failed to encode response body", err, true, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }
