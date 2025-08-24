@@ -1,0 +1,252 @@
+openapi: 3.0.0
+
+info:
+  title: FizzBuzz API
+  description: FizzBuzz API with stats and authentication.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /:
+    get:
+      summary: Health check
+      description: Returns 200 OK to confirm the service is running.
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+  /fizzbuzz:
+    get:
+      summary: Get FizzBuzz sequence
+      description: Returns a FizzBuzz sequence based on input parameters.
+      parameters:
+        - name: int1
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: int2
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: str1
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: str2
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: FizzBuzz sequence returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FizzBuzzResponse'
+        '400':
+          description: Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /stats:
+    get:
+      summary: Get top FizzBuzz query
+      description: Returns the most used FizzBuzz query.
+      responses:
+        '200':
+          description: Top query returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /stats/all:
+    get:
+      summary: Get all FizzBuzz queries
+      description: Returns paginated list of all FizzBuzz queries. JWT auth required.
+      parameters:
+        - name: offset
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Paginated stats returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllStatsResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/login:
+    post:
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    FizzBuzzResponse:
+      type: object
+      properties:
+        payload:
+          type: array
+          items:
+            type: string
+          example: [ "1", "2", "Fizz", "4", "Buzz" ]
+    StatsResponse:
+      type: object
+      properties:
+        int1:
+          type: integer
+        int2:
+          type: integer
+        str1:
+          type: string
+        str2:
+          type: string
+        hits:
+          type: integer
+    AllStatsResponse:
+      type: object
+      properties:
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatsResponse'
+        stats_len:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+    AuthRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    RegisterResponse:
+      type: object
+      properties:
+        userID:
+          type: string
+          format: uuid
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
