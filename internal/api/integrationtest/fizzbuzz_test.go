@@ -23,7 +23,7 @@ func TestGetFizzBuzz(t *testing.T) {
 	err = json.NewDecoder(resp.Body).Decode(&got)
 	require.NoError(t, err)
 	require.Len(t, got.Payload, 16)
-	require.Equal(t, "Fizz", got.Payload[2])
-	require.Equal(t, "Buzz", got.Payload[4])
-	require.Equal(t, "FizzBuzz", got.Payload[14])
+	require.Equal(t, "fizz", got.Payload[2])
+	require.Equal(t, "buzz", got.Payload[4])
+	require.Equal(t, "fizzbuzz", got.Payload[14])
 }

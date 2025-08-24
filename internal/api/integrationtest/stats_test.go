@@ -27,8 +27,8 @@ func TestGetStatsTopQuery(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 3, got.Int1)
 	require.Equal(t, 5, got.Int2)
-	require.Equal(t, "Fizz", got.Str1)
-	require.Equal(t, "Buzz", got.Str2)
+	require.Equal(t, "fizz", got.Str1)
+	require.Equal(t, "buzz", got.Str2)
 	require.Equal(t, 1, got.Hits)
 }
 
@@ -81,6 +81,6 @@ func TestGetStatsAllQueries(t *testing.T) {
 	require.Equal(t, len(got.Stats), got.StatsLen)
 	if len(got.Stats) > 0 {
 		require.Equal(t, 3, got.Stats[0].Int1)
-		require.Equal(t, "Fizz", got.Stats[0].Str1)
+		require.Equal(t, "fizz", got.Stats[0].Str1)
 	}
 }
