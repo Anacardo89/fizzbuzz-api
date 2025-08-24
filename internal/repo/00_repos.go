@@ -6,32 +6,32 @@ import (
 
 // FizzBuzz
 
-type FizzBuzzRepo struct {
+type fizzBuzzHandler struct {
 	pool *pgxpool.Pool
 }
 
-func NewFizzBuzzRepo(pool *pgxpool.Pool) *FizzBuzzRepo {
-	return &FizzBuzzRepo{
+func NewFizzBuzzRepo(pool *pgxpool.Pool) FizzBuzzRepo {
+	return &fizzBuzzHandler{
 		pool: pool,
 	}
 }
 
-func (r *FizzBuzzRepo) Close() {
+func (r *fizzBuzzHandler) Close() {
 	r.pool.Close()
 }
 
 // User
 
-type UserRepo struct {
+type userHandler struct {
 	pool *pgxpool.Pool
 }
 
-func NewUserRepo(pool *pgxpool.Pool) *UserRepo {
-	return &UserRepo{
+func NewUserRepo(pool *pgxpool.Pool) UserRepo {
+	return &userHandler{
 		pool: pool,
 	}
 }
 
-func (r *UserRepo) Close() {
+func (r *userHandler) Close() {
 	r.pool.Close()
 }

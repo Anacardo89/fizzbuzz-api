@@ -13,13 +13,19 @@ var (
 	ErrUserNotFound = errors.New("user not found")
 )
 
+type UserRepo interface {
+	Close()
+	InsertUser(ctx context.Context, username, hashedPassword string) (uuid.UUID, error)
+	SelectUser(ctx context.Context, username string) (*UserRow, error)
+}
+
 type UserRow struct {
 	ID       string `db:"id"`
 	Username string `db:"username"`
 	Password string `db:"password"`
 }
 
-func (r *UserRepo) InsertUser(ctx context.Context, username, hashedPassword string) (uuid.UUID, error) {
+func (r *userHandler) InsertUser(ctx context.Context, username, hashedPassword string) (uuid.UUID, error) {
 	const query = `
 		INSERT INTO users (
 			username,
@@ -42,7 +48,7 @@ func (r *UserRepo) InsertUser(ctx context.Context, username, hashedPassword stri
 	return ID, nil
 }
 
-func (r *UserRepo) SelectUser(ctx context.Context, username string) (*UserRow, error) {
+func (r *userHandler) SelectUser(ctx context.Context, username string) (*UserRow, error) {
 	const query = `
 		SELECT 
 			id,

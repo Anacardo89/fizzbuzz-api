@@ -14,7 +14,7 @@ import (
 var configBytes []byte
 
 func LoadConfig() (*Config, error) {
-	cfg := defaultConfig()
+	cfg := DefaultConfig()
 	if err := yaml.Unmarshal(configBytes, cfg); err != nil {
 		return nil, fmt.Errorf("unmarshal config: %w", err)
 	}
@@ -24,39 +24,39 @@ func LoadConfig() (*Config, error) {
 	cfg.Token.Duration *= time.Minute
 	cfg.DB.MaxConnLifetime *= time.Minute
 	cfg.DB.MaxConnIdleTime *= time.Minute
-	envs := EnvVars{}
-	if err := env.Parse(&envs); err != nil {
+	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("parsing env: %w", err)
 	}
-	cfg.Server.Port = envs.Port
-	cfg.DB.DSN = envs.DBDSN
-	cfg.Log.Path = envs.LogPath
-	cfg.Log.File = envs.LogFile
-	cfg.Log.Level = envs.LogLevel
 	log.Printf("final cfg: %+v", cfg)
 	return cfg, nil
 }
 
-func defaultConfig() *Config {
+func DefaultConfig() *Config {
 	return &Config{
 		Server: ServerConfig{
+			Port:            "8080",
 			ReadTimeout:     5,  // seconds
 			WriteTimeout:    10, // seconds
 			ShutdownTimeout: 15, // seconds
 		},
 		Token: TokenConfig{
+			Secret:   "token-secret",
 			Duration: 60 * time.Minute, // minutes
 		},
 		DB: DBConfig{
+			DSN:             "postgres://user:pass@localhost:5432/dbname?sslmode=disable",
 			MaxConns:        10,
 			MinConns:        2,
 			MaxConnLifetime: 30, // minutes
 			MaxConnIdleTime: 5,  // minutes
 		},
 		Log: LogConfig{
-			MaxSize:    10,
+			Path:       "/fizzbuzz-api/logs",
+			File:       "fizzbuzz-api.log",
+			Level:      "info",
+			MaxSize:    10, // MB
 			MaxBackups: 3,
-			MaxAge:     30,
+			MaxAge:     30, // days
 			Compress:   true,
 		},
 		Pag: PagConfig{

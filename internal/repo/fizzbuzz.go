@@ -7,6 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type FizzBuzzRepo interface {
+	Close()
+	UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow) error
+	SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzzRow, error)
+	SelectFizzBuzzQueries(ctx context.Context, limit, offset int) ([]FizzBuzzRow, error)
+}
+
 type FizzBuzzRow struct {
 	ID           uuid.UUID
 	Int1         int
@@ -16,7 +23,7 @@ type FizzBuzzRow struct {
 	RequestCount int
 }
 
-func (r *FizzBuzzRepo) UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow) error {
+func (r *fizzBuzzHandler) UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow) error {
 	query := `
 		INSERT INTO fizzbuzz (
 			int1,
@@ -39,7 +46,7 @@ func (r *FizzBuzzRepo) UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow) e
 	return nil
 }
 
-func (r *FizzBuzzRepo) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzzRow, error) {
+func (r *fizzBuzzHandler) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzzRow, error) {
 	query := `
 		SELECT 
 			int1,
@@ -65,7 +72,7 @@ func (r *FizzBuzzRepo) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzzRow
 	return &fbrow, nil
 }
 
-func (r *FizzBuzzRepo) SelectFizzBuzzQueries(ctx context.Context, limit, offset int) ([]FizzBuzzRow, error) {
+func (r *fizzBuzzHandler) SelectFizzBuzzQueries(ctx context.Context, limit, offset int) ([]FizzBuzzRow, error) {
 	query := `
 		SELECT 
 			int1,

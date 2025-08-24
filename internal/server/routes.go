@@ -22,8 +22,8 @@ func NewRouter(fh *api.FizzBuzzHandler, ah *api.AuthHandler, mw *middleware.Midd
 	r.Handle("/fizzbuzz", http.HandlerFunc(fh.GetFizzBuzz)).Methods("GET")
 
 	// Stats
-	r.Handle("/stats", http.HandlerFunc(fh.GetTopQuery)).Methods("GET")
-	r.Handle("/stats/all", mw.Auth(http.HandlerFunc(fh.GetAllQueries))).Methods("GET")
+	r.Handle("/stats", http.HandlerFunc(fh.GetStatsTopQuery)).Methods("GET")
+	r.Handle("/stats/all", mw.Auth(http.HandlerFunc(fh.GetStatsAllQueries))).Methods("GET")
 
 	// Catch-all 404
 	r.NotFoundHandler = http.HandlerFunc(api.CatchAll)

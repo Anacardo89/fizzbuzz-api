@@ -60,3 +60,9 @@ type LoginResponse struct {
 type RegisterResponse struct {
 	UserID uuid.UUID `json:"user_id"`
 }
+
+// Health check
+
+type HealthCheckResponse struct {
+	Status string `json:"status"`
+}

@@ -6,7 +6,7 @@ import (
 	"github.com/Anacardo89/fizzbuzz-api/pkg/db"
 )
 
-func initDB(cfg config.DBConfig) (*repo.FizzBuzzRepo, *repo.UserRepo, error) {
+func initDB(cfg config.DBConfig) (repo.FizzBuzzRepo, repo.UserRepo, error) {
 	fbPool, err := db.Connect(cfg)
 	if err != nil {
 		return nil, nil, err

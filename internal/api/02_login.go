@@ -8,13 +8,6 @@ import (
 	"github.com/Anacardo89/fizzbuzz-api/pkg/crypto"
 )
 
-type FailHelper struct {
-	LogMsg string
-	Err    error
-	Status int
-	OutMsg string
-}
-
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// Error Handling
 	fail := func(logMsg string, e error, status int, outMsg string) {
@@ -28,7 +21,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(status)
 		resp := ErrorResponse{Error: outMsg}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			h.log.Error("failed to encode error response", "error", err)
+			h.log.Error("failed to encode error response body", "error", err)
 		}
 	}
 	//
@@ -54,10 +47,10 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		fail("failed to generate token", err, http.StatusInternalServerError, ErrInternalError.Error())
 		return
 	}
-	resp := LoginResponse{
+	body := LoginResponse{
 		Token: token,
 	}
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		fail("failed to encode response", err, http.StatusInternalServerError, ErrInternalError.Error())
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		fail("failed to encode response body", err, http.StatusInternalServerError, ErrInternalError.Error())
 	}
 }
