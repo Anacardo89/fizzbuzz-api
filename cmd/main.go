@@ -7,12 +7,15 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
+
 	"github.com/Anacardo89/fizzbuzz-api/config"
 	"github.com/Anacardo89/fizzbuzz-api/internal/api"
 	"github.com/Anacardo89/fizzbuzz-api/internal/auth"
 	"github.com/Anacardo89/fizzbuzz-api/internal/middleware"
 	"github.com/Anacardo89/fizzbuzz-api/internal/server"
 	"github.com/Anacardo89/fizzbuzz-api/pkg/logger"
+	"github.com/Anacardo89/fizzbuzz-api/pkg/obs"
 )
 
 func main() {
@@ -25,6 +28,12 @@ func main() {
 	}
 	logg := logger.NewLogger(cfg.Log)
 	tokenMan := auth.NewTokenManager(&cfg.Token)
+	statsClient, err := obs.Start(cfg.DD)
+	if err != nil {
+		logg.Fatal("failed to start datadog: %v", err)
+	}
+	defer tracer.Stop()
+	defer statsClient.Close()
 	fbRepo, userRepo, err := initDB(cfg.DB)
 	if err != nil {
 		logg.Fatal("failed to init db: %v", err)

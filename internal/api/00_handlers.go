@@ -10,12 +10,12 @@ import (
 // FizzBuzz
 
 type FizzBuzzHandler struct {
-	cfg *config.PagConfig
+	cfg *config.Pag
 	db  repo.FizzBuzzRepo
 	log *logger.Logger
 }
 
-func NewFizzBuzzHandler(cfg *config.PagConfig, r repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler {
+func NewFizzBuzzHandler(cfg *config.Pag, r repo.FizzBuzzRepo, l *logger.Logger) *FizzBuzzHandler {
 	return &FizzBuzzHandler{
 		db:  r,
 		log: l,

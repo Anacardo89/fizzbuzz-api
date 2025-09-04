@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Anacardo89/fizzbuzz-api/config"
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/Anacardo89/fizzbuzz-api/config"
 )
 
 type TokenManager struct {
@@ -18,7 +19,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func NewTokenManager(cfg *config.TokenConfig) *TokenManager {
+func NewTokenManager(cfg *config.Token) *TokenManager {
 	return &TokenManager{
 		secret:   []byte(cfg.Secret),
 		duration: cfg.Duration,

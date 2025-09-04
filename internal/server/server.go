@@ -26,7 +26,7 @@ type ServerTimeouts struct {
 	ShutdownTimeout time.Duration
 }
 
-func NewServer(cfg *config.ServerConfig, l *logger.Logger, fh *api.FizzBuzzHandler, ah *api.AuthHandler, mw *middleware.MiddlewareHandler) *Server {
+func NewServer(cfg *config.Server, l *logger.Logger, fh *api.FizzBuzzHandler, ah *api.AuthHandler, mw *middleware.MiddlewareHandler) *Server {
 	to := ServerTimeouts{
 		ReadTimeout:     cfg.ReadTimeout,
 		WriteTimeout:    cfg.WriteTimeout,

@@ -40,6 +40,24 @@ services:
       - ./scripts:/scripts
     command: ["${DB_HOST}", "${DB_PORT}", "${DB_TIMEOUT}", "/scripts/migrate.sh"]
 
+  datadog-agent:
+    image: gcr.io/datadoghq/agent:latest
+    container_name: datadog-agent
+    environment:
+      DD_API_KEY: ${DD_API_KEY}
+      DD_SITE: datadoghq.com
+      DD_APM_ENABLED: true
+      DD_LOGS_ENABLED: false
+      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: true
+      DD_ENV: ${DD_ENV}
+      DD_SERVICE: ${DD_SERVICE}
+      DD_VERSION: ${DD_VERSION}
+    networks:
+      - fizzbuzz-network
+    ports:
+      - "${DD_TRACER_PORT}:${DD_TRACER_PORT}/tcp"
+      - "${DD_METRICS_PORT}:${DD_METRICS_PORT}/udp"
+
   fizzbuzz-api:
     build:
       context: .
@@ -57,6 +75,11 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       LOG_PATH: ${LOG_PATH}
       LOG_FILE: ${LOG_FILE}
+      DD_ENV: ${DD_ENV}
+      DD_SERVICE: ${DD_SERVICE}
+      DD_VERSION: ${DD_VERSION}
+      DD_TRACER_PORT: ${DD_TRACER_PORT}
+      DD_METRICS_PORT: ${DD_METRICS_PORT}
     ports:
       - "${PORT}:${PORT}"
     networks:

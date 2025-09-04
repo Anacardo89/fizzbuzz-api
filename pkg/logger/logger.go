@@ -6,8 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Anacardo89/fizzbuzz-api/config"
 	"github.com/natefinch/lumberjack"
+
+	"github.com/Anacardo89/fizzbuzz-api/config"
 )
 
 type Logger struct {
@@ -15,7 +16,7 @@ type Logger struct {
 	level slog.Level
 }
 
-func NewLogger(cfg config.LogConfig) *Logger {
+func NewLogger(cfg config.Log) *Logger {
 	level := slog.LevelInfo
 	switch strings.ToLower(cfg.Level) {
 	case "debug":

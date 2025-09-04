@@ -33,24 +33,24 @@ func LoadConfig() (*Config, error) {
 
 func DefaultConfig() *Config {
 	return &Config{
-		Server: ServerConfig{
+		Server: Server{
 			Port:            "8080",
 			ReadTimeout:     5,  // seconds
 			WriteTimeout:    10, // seconds
 			ShutdownTimeout: 15, // seconds
 		},
-		Token: TokenConfig{
+		Token: Token{
 			Secret:   "token-secret",
 			Duration: 60 * time.Minute, // minutes
 		},
-		DB: DBConfig{
+		DB: DB{
 			DSN:             "postgres://user:pass@localhost:5432/dbname?sslmode=disable",
 			MaxConns:        10,
 			MinConns:        2,
 			MaxConnLifetime: 30, // minutes
 			MaxConnIdleTime: 5,  // minutes
 		},
-		Log: LogConfig{
+		Log: Log{
 			Path:       "/fizzbuzz-api/logs",
 			File:       "fizzbuzz-api.log",
 			Level:      "info",
@@ -59,9 +59,19 @@ func DefaultConfig() *Config {
 			MaxAge:     30, // days
 			Compress:   true,
 		},
-		Pag: PagConfig{
+		Pag: Pag{
 			DefaultPageSize: 20,
 			MaxPageSize:     200,
+		},
+		DD: DD{
+			Env:              "dev",
+			Service:          "fizzbuzz-api",
+			Agent:            "datadog-agent",
+			Version:          "0.1.0",
+			TracerPort:       "8126",
+			TracerSampleRate: 0.1,
+			MetricsPort:      "8126",
+			MetricsNamespace: "fizzbuzz-api.",
 		},
 	}
 }
