@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -26,6 +27,9 @@ type UserRow struct {
 }
 
 func (r *userHandler) InsertUser(ctx context.Context, username, hashedPassword string) (uuid.UUID, error) {
+	span, spanCtx := tracer.StartSpanFromContext(ctx, "db.insert_user")
+	defer span.Finish()
+
 	const query = `
 		INSERT INTO users (
 			username,
@@ -35,7 +39,7 @@ func (r *userHandler) InsertUser(ctx context.Context, username, hashedPassword s
 		RETURNING id;
 	;`
 	var ID uuid.UUID
-	if err := r.pool.QueryRow(ctx, query,
+	if err := r.pool.QueryRow(spanCtx, query,
 		username,
 		hashedPassword,
 	).Scan(&ID); err != nil {
@@ -49,6 +53,9 @@ func (r *userHandler) InsertUser(ctx context.Context, username, hashedPassword s
 }
 
 func (r *userHandler) SelectUser(ctx context.Context, username string) (*UserRow, error) {
+	span, spanCtx := tracer.StartSpanFromContext(ctx, "db.select_user")
+	defer span.Finish()
+
 	const query = `
 		SELECT 
 			id,
@@ -58,7 +65,7 @@ func (r *userHandler) SelectUser(ctx context.Context, username string) (*UserRow
 		WHERE username = $1
 	;`
 	user := UserRow{}
-	if err := r.pool.QueryRow(ctx, query, username).Scan(
+	if err := r.pool.QueryRow(spanCtx, query, username).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Password,

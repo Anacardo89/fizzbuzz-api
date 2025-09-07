@@ -1,11 +1,13 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
 	"strings"
 
+	"github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"github.com/natefinch/lumberjack"
 
 	"github.com/Anacardo89/fizzbuzz-api/config"
@@ -37,9 +39,9 @@ func NewLogger(cfg config.Log) *Logger {
 		MaxAge:     cfg.MaxAge,
 		Compress:   cfg.Compress,
 	}
-	fileJSONHandler := slog.NewJSONHandler(lj, &slog.HandlerOptions{AddSource: true})
+	fileHandler := slog.NewJSONHandler(lj, &slog.HandlerOptions{AddSource: true})
 	stderrHandler := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{AddSource: true})
-	multiHandler := NewMultiHandler(fileJSONHandler, stderrHandler)
+	multiHandler := NewMultiHandler(fileHandler, stderrHandler)
 	return &Logger{
 		log:   slog.New(multiHandler),
 		level: level,
@@ -76,4 +78,15 @@ func (l *Logger) Warn(msg string, args ...any) {
 func (l *Logger) Fatal(msg string, args ...any) {
 	l.logWithLevel(slog.LevelError, msg, args...)
 	os.Exit(1)
+}
+
+func TraceAttrs(ctx context.Context) []any {
+	span, ok := tracer.SpanFromContext(ctx)
+	if !ok {
+		return nil
+	}
+	return []any{
+		slog.String("dd.trace_id", span.Context().TraceID()),
+		slog.Int64("dd.span_id", int64(span.Context().SpanID())),
+	}
 }

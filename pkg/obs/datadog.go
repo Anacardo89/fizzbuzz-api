@@ -9,7 +9,7 @@ import (
 	"github.com/Anacardo89/fizzbuzz-api/config"
 )
 
-func Start(cfg config.DD) (*statsd.Client, error) {
+func Start(cfg config.DD) (MetricsClient, error) {
 	tracer.Start(
 		tracer.WithService(cfg.Service),
 		tracer.WithEnv(cfg.Env),
@@ -28,5 +28,7 @@ func Start(cfg config.DD) (*statsd.Client, error) {
 		return nil, err
 	}
 
-	return statsClient, nil
+	return &ddMetrics{
+		statsClient,
+	}, nil
 }

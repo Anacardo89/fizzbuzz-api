@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Anacardo89/fizzbuzz-api/internal/core"
+	"github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 )
 
 func (h *FizzBuzzHandler) GetFizzBuzz(w http.ResponseWriter, r *http.Request) {
@@ -47,9 +48,11 @@ func (h *FizzBuzzHandler) GetFizzBuzz(w http.ResponseWriter, r *http.Request) {
 	}
 	go func() {
 		paramsDB := ParamsToDB(*params)
+		span, _ := tracer.StartSpanFromContext(r.Context(), "db.upsert_fizzbuzz")
 		if err := h.db.UpsertFizzBuzz(context.Background(), paramsDB); err != nil {
 			fail("dberr: upsert fizzbuzz", err, false, 0, "")
 		}
+		span.Finish()
 	}()
 	if err := json.NewEncoder(w).Encode(body); err != nil {
 		fail("failed to encode response body", err, true, http.StatusInternalServerError, ErrInternalError.Error())

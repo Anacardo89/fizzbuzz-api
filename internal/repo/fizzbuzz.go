@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 	"github.com/google/uuid"
 )
 
@@ -24,6 +25,9 @@ type FizzBuzzRow struct {
 }
 
 func (r *fizzBuzzHandler) UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow) error {
+	span, spanCtx := tracer.StartSpanFromContext(ctx, "db.upsert_fizzbuzz")
+	defer span.Finish()
+
 	query := `
 		INSERT INTO fizzbuzz (
 			int1,
@@ -35,7 +39,7 @@ func (r *fizzBuzzHandler) UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow
 		ON CONFLICT (int1, int2, str1, str2)
 		DO UPDATE SET request_count = fizzbuzz.request_count + 1
 	;`
-	if _, err := r.pool.Exec(ctx, query,
+	if _, err := r.pool.Exec(spanCtx, query,
 		params.Int1,
 		params.Int2,
 		params.Str1,
@@ -47,6 +51,9 @@ func (r *fizzBuzzHandler) UpsertFizzBuzz(ctx context.Context, params FizzBuzzRow
 }
 
 func (r *fizzBuzzHandler) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzzRow, error) {
+	span, spanCtx := tracer.StartSpanFromContext(ctx, "db.select_top_fizzbuzz")
+	defer span.Finish()
+
 	query := `
 		SELECT 
 			int1,
@@ -59,7 +66,7 @@ func (r *fizzBuzzHandler) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzz
 		LIMIT 1
 	;`
 	var fbrow FizzBuzzRow
-	row := r.pool.QueryRow(ctx, query)
+	row := r.pool.QueryRow(spanCtx, query)
 	if err := row.Scan(
 		&fbrow.Int1,
 		&fbrow.Int2,
@@ -73,6 +80,9 @@ func (r *fizzBuzzHandler) SelectTopFizzBuzzQuery(ctx context.Context) (*FizzBuzz
 }
 
 func (r *fizzBuzzHandler) SelectFizzBuzzQueries(ctx context.Context, limit, offset int) ([]FizzBuzzRow, error) {
+	span, spanCtx := tracer.StartSpanFromContext(ctx, "db.select_fizzbuzz")
+	defer span.Finish()
+
 	query := `
 		SELECT 
 			int1,
@@ -85,7 +95,7 @@ func (r *fizzBuzzHandler) SelectFizzBuzzQueries(ctx context.Context, limit, offs
 		LIMIT $1
 		OFFSET $2;
 	;`
-	rows, err := r.pool.Query(ctx, query, limit, offset)
+	rows, err := r.pool.Query(spanCtx, query, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query fizzbuzz: %w", err)
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/Anacardo89/fizzbuzz-api/internal/middleware"
 	"github.com/Anacardo89/fizzbuzz-api/internal/repo"
 	"github.com/Anacardo89/fizzbuzz-api/pkg/logger"
+	"github.com/Anacardo89/fizzbuzz-api/pkg/obs"
 )
 
 func LoadDefaultConfig() *config.Config {
@@ -29,11 +30,12 @@ func NewMockServer() *httptest.Server {
 	cfg := LoadDefaultConfig()
 	l := logger.NewLogger(cfg.Log)
 	tokenMan := auth.NewTokenManager(&cfg.Token)
+	mockMetrics := &obs.MockMetrics{}
 	fbRepo := repo.NewMockFizzBuzzRepo()
 	userRepo := repo.NewMockUserRepo()
 	fh := api.NewFizzBuzzHandler(&cfg.Pag, fbRepo, l)
 	ah := api.NewAuthHandler(tokenMan, userRepo, l)
-	mw := middleware.NewMiddlewareHandler(tokenMan, l, cfg.Server.WriteTimeout)
+	mw := middleware.NewMiddlewareHandler(tokenMan, l, cfg.Server.WriteTimeout, mockMetrics)
 
 	s := NewServer(&cfg.Server, l, fh, ah, mw)
 
