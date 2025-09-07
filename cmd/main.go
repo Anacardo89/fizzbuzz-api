@@ -42,7 +42,7 @@ func main() {
 	defer userRepo.Close()
 	fh := api.NewFizzBuzzHandler(&cfg.Pag, fbRepo, logg)
 	ah := api.NewAuthHandler(tokenMan, userRepo, logg)
-	mw := middleware.NewMiddlewareHandler(tokenMan, logg, cfg.Server.WriteTimeout)
+	mw := middleware.NewMiddlewareHandler(tokenMan, logg, cfg.Server.WriteTimeout, statsClient)
 
 	srv := server.NewServer(&cfg.Server, logg, fh, ah, mw)
 
